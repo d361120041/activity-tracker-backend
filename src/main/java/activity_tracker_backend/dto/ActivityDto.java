@@ -31,11 +31,16 @@ public class ActivityDto {
     @NotBlank(message = "category 不能是空白")
     private String category;
 
+    @NotNull(message = "startTime 是必填")
     private LocalTime startTime;
+
+    @NotNull(message = "endTime 是必填")
     private LocalTime endTime;
+
     private String notes;
 
     @Min(value = 1, message = "mood 最少為 1")
-    @Max(value = 5, message = "mood 最少為 5")
+    @Max(value = 5, message = "mood 最多為 5")
+    @NotNull(message = "mood 是必填")
     private Byte mood;
 }
