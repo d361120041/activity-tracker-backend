@@ -1,8 +1,5 @@
 package activity_tracker_backend.config;
 
-import activity_tracker_backend.jwt.JwtAuthenticationFilter;
-import activity_tracker_backend.service.UserService;
-import activity_tracker_backend.jwt.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,11 +18,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http, UserService userService, JwtUtils jwtUtils
-    ) throws Exception
-    {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userService);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
@@ -34,8 +27,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
-                )
-                .httpBasic(org.springframework.security.config.Customizer.withDefaults());
+                );
         return http.build();
     }
 }
