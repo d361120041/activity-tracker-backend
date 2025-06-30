@@ -32,9 +32,6 @@ public class UserController {
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
 
-    @Value("${jwt.access-token-expiration-ms}")
-    private int refreshTokenExpirationMs;
-
     public UserController(UserService userService, JwtUtils jwtUtils, RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.jwtUtils = jwtUtils;
@@ -60,7 +57,10 @@ public class UserController {
                         Cookie refreshTokenCookie = createRefreshTokenCookie(refreshToken);
                         response.addCookie(refreshTokenCookie);
 
-                        return ResponseEntity.ok().body(Map.of("accessToken", accessToken));
+                        return ResponseEntity.ok().body(Map.of(
+                                "accessToken", accessToken,
+                                "userId", user.getId()
+                        ));
                     } else {
                         return ResponseEntity.status(401).body("密碼錯誤");                    }
                 })
@@ -108,6 +108,7 @@ public class UserController {
         JSONObject response = new JSONObject();
         if (refreshToken==null || refreshToken.isEmpty()) {
             response.put("error", "Refresh token missing from cookie");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return response.toString();
         }
 
@@ -116,6 +117,7 @@ public class UserController {
             userEmail = jwtUtils.extractUserEmail(refreshToken);
         } catch (Exception e){
             response.put("error", "Invalid refresh token claim or expired");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return response.toString();
         }
 
@@ -123,12 +125,14 @@ public class UserController {
             refreshTokenService.revokeRefreshToken(refreshToken);
             clearRefreshTokenCookie(res);
             response.put("error", "Refresh token expired, please login again");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return response.toString();
         }
 
         if (!refreshTokenService.isValidRefreshToken(userEmail, refreshToken)) {
             clearRefreshTokenCookie(res);
             response.put("error", "Invalid or revoked refresh token");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return response.toString();
         }
 
