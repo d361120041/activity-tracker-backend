@@ -1,4 +1,4 @@
-package activity_tracker_backend.dto;
+package activity_tracker_backend.controller.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

@@ -1,7 +1,7 @@
 package activity_tracker_backend.controller;
 
-import activity_tracker_backend.dto.UserLoginDto;
-import activity_tracker_backend.dto.UserRegisterDto;
+import activity_tracker_backend.controller.dto.UserLoginDto;
+import activity_tracker_backend.controller.dto.UserRegisterDto;
 import activity_tracker_backend.jwt.JwtUtils;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.service.RefreshTokenService;
@@ -11,11 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

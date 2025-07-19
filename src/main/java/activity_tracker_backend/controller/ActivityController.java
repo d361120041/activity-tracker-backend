@@ -1,6 +1,6 @@
 package activity_tracker_backend.controller;
 
-import activity_tracker_backend.dto.ActivityDto;
+import activity_tracker_backend.controller.dto.ActivityDto;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.service.ActivityService;
