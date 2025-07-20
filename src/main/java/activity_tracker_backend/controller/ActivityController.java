@@ -1,6 +1,7 @@
 package activity_tracker_backend.controller;
 
 import activity_tracker_backend.controller.dto.ActivityDto;
+import activity_tracker_backend.controller.dto.CSVDto;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.service.ActivityService;
@@ -26,6 +27,24 @@ public class ActivityController {
         this.activityService = activityService;
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> findAllActivities() {
+        List<Activity> activities = activityService.findAll();
+        return ResponseEntity.ok().body(activities);
+    }
+
+    @GetMapping("/byDate")
+    public ResponseEntity<?> findActivitiesByDate(UUID userId, LocalDate activityDate) {
+        Optional<User> userOpt = userService.findById(userId);
+        if(userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("找不到 user");
+        }
+        User user = userOpt.get();
+
+        List<Activity> activities = activityService.findActivitiesByActivityDate(user, activityDate);
+        return ResponseEntity.ok(activities);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> addAnActivity(@Valid @RequestBody ActivityDto dto) {
         Optional<User> userFound = userService.findById(dto.getUserId());
@@ -46,18 +65,6 @@ public class ActivityController {
 
         Activity activitySaved = activityService.addAnActivity(user, activity);
         return ResponseEntity.ok(activitySaved);
-    }
-
-    @GetMapping("/byDate")
-    public ResponseEntity<?> findActivitiesByDate(UUID userId, LocalDate activityDate) {
-        Optional<User> userOpt = userService.findById(userId);
-        if(userOpt.isEmpty()) {
-            return ResponseEntity.status(404).body("找不到 user");
-        }
-        User user = userOpt.get();
-
-        List<Activity> activities = activityService.findActivitiesByActivityDate(user, activityDate);
-        return ResponseEntity.ok(activities);
     }
 
     @PutMapping("/update/{id}")
@@ -99,4 +106,11 @@ public class ActivityController {
         activityService.deleteAnActivityById(id);
         return ResponseEntity.ok("刪除成功");
     }
+
+    @PostMapping("/csv")
+    public ResponseEntity<?> activitiesToCSV(@RequestBody CSVDto dto) {
+        activityService.generateActivityCSV(dto.getIds());
+        return ResponseEntity.ok("CSV 產生成功");
+    }
+
 }

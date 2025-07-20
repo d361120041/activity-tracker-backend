@@ -1,4 +1,4 @@
-package activity_tracker_backend.exception;
+package activity_tracker_backend.controller.advice;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -188,4 +188,19 @@ public class ActivityServiceTest {
         Optional<Activity> activityAfterDeleted = activityRepository.findById(testActivity.getId());
         assertThat(activityAfterDeleted).isEmpty();
     }
+
+    @Test
+    void testFindAll() {
+        List<Activity> activities = activityService.findAll();
+        assertThat(activities).isNotNull();
+        assertThat(activities).isNotEmpty();
+
+        long activityNumber = activityRepository.count();
+        assertThat(activityNumber).isEqualTo(activities.size());
+    }
+
+    @Test
+    void generateActivityCSV() {
+        activityService.generateActivityCSV(List.of(testActivity.getId()));
+    }
 }

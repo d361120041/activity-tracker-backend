@@ -3,6 +3,7 @@ package activity_tracker_backend.repository;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import jakarta.transaction.Transactional;
+import org.assertj.core.internal.Longs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,6 +68,16 @@ public class ActivityRepositoryTest {
                         .user(testUser)
                         .build()
         );
+    }
+    @Test
+    void testFindByIdIn() {
+        List<UUID> ids = List.of(test.getId());
+        List<Activity> activities = activityRepository.findByIdIn(ids);
+        assertThat(activities).isNotNull();
+        assertThat(activities).isNotEmpty();
+
+        long number = activityRepository.count();
+        assertThat(activities.size()).isEqualTo(number);
     }
 
     @Test

@@ -3,6 +3,7 @@ package activity_tracker_backend.service;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.repository.ActivityRepository;
+import activity_tracker_backend.util.CSVUtilities;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,11 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
 
-    public ActivityService(ActivityRepository activityRepository) {
+    private final CSVUtilities csvUtilities;
+
+    public ActivityService(ActivityRepository activityRepository, CSVUtilities csvUtilities) {
         this.activityRepository = activityRepository;
+        this.csvUtilities = csvUtilities;
     }
 
     public List<Activity> findActivitiesByActivityDate(User user, LocalDate activityDate) {
@@ -33,6 +37,10 @@ public class ActivityService {
         return activityRepository.findById(id);
     }
 
+    public List<Activity> findAll() {
+        return activityRepository.findAll();
+    }
+
     public Activity addAnActivity(User user, Activity activity) {
         activity.setUser(user);
         return activityRepository.save(activity);
@@ -44,5 +52,10 @@ public class ActivityService {
 
     public void deleteAnActivityById(UUID id) {
         activityRepository.deleteById(id);
+    }
+
+    public void generateActivityCSV(List<UUID> ids) {
+        List<Activity> activities = activityRepository.findByIdIn(ids);
+        csvUtilities.activitiesToCSV(activities, "C:/Users/江宗翰/Desktop/activities.csv");
     }
 }
