@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,8 @@ import java.util.function.Function;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
+@Slf4j
 @Component
 public class JwtUtils {
 
@@ -73,6 +76,7 @@ public class JwtUtils {
         try {
             return !isTokenExpire(token);
         } catch (Exception e) {
+            log.error("Refresh token validation failed");
             return false;
         }
     }

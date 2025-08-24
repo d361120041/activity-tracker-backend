@@ -88,7 +88,7 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("refresh-token")
+    @PostMapping("/refresh-token")
     public String refreshToken(HttpServletRequest req, HttpServletResponse res) {
 
         String refreshToken = null;
