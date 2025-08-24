@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -36,10 +39,10 @@ public class CSVUtilitiesTest {
     }
 
     @Test
-    void testGenerateCSV() {
-        String target = "C:/Users/江宗翰/Desktop/test.csv";
+    void testGenerateCSV() throws IOException {
+        Path target = Paths.get("C:/Users/江宗翰/Desktop/test.csv");
         String source = "test";
-        csvUtilities.generateUTF_8CSV(target, source);
+        csvUtilities.generateUTF_8CSV(source, target);
     }
 
     @Test

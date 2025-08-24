@@ -3,26 +3,32 @@ package activity_tracker_backend.service;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.repository.ActivityRepository;
-import activity_tracker_backend.util.CSVUtilities;
+import activity_tracker_backend.service.dto.ActivityResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final ReportService reportService;
 
-    private final CSVUtilities csvUtilities;
-
-    public ActivityService(ActivityRepository activityRepository, CSVUtilities csvUtilities) {
+    public ActivityService(ActivityRepository activityRepository, ReportService reportService) {
         this.activityRepository = activityRepository;
-        this.csvUtilities = csvUtilities;
+        this.reportService = reportService;
     }
 
     public List<Activity> findActivitiesByActivityDate(User user, LocalDate activityDate) {
@@ -37,8 +43,25 @@ public class ActivityService {
         return activityRepository.findById(id);
     }
 
-    public List<Activity> findAll() {
-        return activityRepository.findAll();
+    public List<ActivityResponse> findAll() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+        return activityRepository.findAll().stream()
+                .map(activity -> {
+                    ActivityResponse dto = new ActivityResponse();
+                    dto.setId(activity.getId());
+                    dto.setActivityDate(activity.getActivityDate());
+                    dto.setTitle(activity.getTitle());
+                    dto.setCategory(activity.getCategory());
+                    dto.setStartTime(activity.getStartTime());
+                    dto.setEndTime(activity.getEndTime());
+                    dto.setNotes(activity.getNotes());
+                    dto.setMood(activity.getMood());
+                    dto.setCreatedAt(activity.getCreatedAt().format(formatter));
+                    dto.setUpdatedAt(activity.getUpdatedAt().format(formatter));
+                    dto.setUserEmail(activity.getUser().getEmail());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     public Activity addAnActivity(User user, Activity activity) {
@@ -54,8 +77,12 @@ public class ActivityService {
         activityRepository.deleteById(id);
     }
 
-    public void generateActivityCSV(List<UUID> ids) {
-        List<Activity> activities = activityRepository.findByIdIn(ids);
-        csvUtilities.activitiesToCSV(activities, "C:/Users/江宗翰/Desktop/activities.csv");
+    public String generateReport(List<UUID> ids) {
+        try {
+            List<Activity> activities = activityRepository.findByIdIn(ids);
+            return reportService.generateReport(activities);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

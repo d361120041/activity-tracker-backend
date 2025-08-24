@@ -5,31 +5,48 @@ import activity_tracker_backend.controller.dto.CSVDto;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.service.ActivityService;
+import activity_tracker_backend.service.ReportService;
 import activity_tracker_backend.service.UserService;
+import activity_tracker_backend.service.dto.ActivityResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.system.ApplicationHome;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/activities")
 public class ActivityController {
 
     private final UserService userService;
     private final ActivityService activityService;
+    private final ReportService reportService;
 
-    public ActivityController(UserService userService, ActivityService activityService) {
+    public ActivityController(UserService userService, ActivityService activityService, ReportService reportService) {
         this.userService = userService;
         this.activityService = activityService;
+        this.reportService = reportService;
     }
 
     @GetMapping("/all")
     public ResponseEntity<?> findAllActivities() {
-        List<Activity> activities = activityService.findAll();
+        List<ActivityResponse> activities = activityService.findAll();
         return ResponseEntity.ok().body(activities);
     }
 
@@ -107,10 +124,25 @@ public class ActivityController {
         return ResponseEntity.ok("刪除成功");
     }
 
-    @PostMapping("/csv")
-    public ResponseEntity<?> activitiesToCSV(@RequestBody CSVDto dto) {
-        activityService.generateActivityCSV(dto.getIds());
-        return ResponseEntity.ok("CSV 產生成功");
+    @PostMapping("/generateReport")
+    public ResponseEntity<?> generateReport(@RequestBody CSVDto dto) {
+        String fileName = activityService.generateReport(dto.getIds());
+        return ResponseEntity.ok(fileName);
     }
 
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<?> downloadReport(@PathVariable String fileName) throws MalformedURLException {
+        Path reportRoot = Path.of(reportService.getReportRoot());
+        Path filePath = reportRoot.resolve(fileName);
+        Resource resource = new UrlResource(filePath.toUri());
+        if (resource.exists()) {
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        }
+        return ResponseEntity.badRequest().body("無此檔案");
+    }
 }

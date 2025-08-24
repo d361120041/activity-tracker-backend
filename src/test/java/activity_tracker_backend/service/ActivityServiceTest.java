@@ -4,6 +4,7 @@ import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.repository.ActivityRepository;
 import activity_tracker_backend.repository.UserRepository;
+import activity_tracker_backend.service.dto.ActivityResponse;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -191,16 +192,11 @@ public class ActivityServiceTest {
 
     @Test
     void testFindAll() {
-        List<Activity> activities = activityService.findAll();
+        List<ActivityResponse> activities = activityService.findAll();
         assertThat(activities).isNotNull();
         assertThat(activities).isNotEmpty();
 
         long activityNumber = activityRepository.count();
         assertThat(activityNumber).isEqualTo(activities.size());
-    }
-
-    @Test
-    void generateActivityCSV() {
-        activityService.generateActivityCSV(List.of(testActivity.getId()));
     }
 }
