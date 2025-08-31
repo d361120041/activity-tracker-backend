@@ -1,13 +1,11 @@
 package activity_tracker_backend.service.dto;
 
-import activity_tracker_backend.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -15,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityResponse {
+public class ActivityReturn {
     private UUID id;
     private LocalDate activityDate;
     private String title;

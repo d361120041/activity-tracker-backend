@@ -3,17 +3,13 @@ package activity_tracker_backend.service;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.repository.ActivityRepository;
-import activity_tracker_backend.service.dto.ActivityResponse;
+import activity_tracker_backend.service.dto.ActivityReturn;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,11 +39,11 @@ public class ActivityService {
         return activityRepository.findById(id);
     }
 
-    public List<ActivityResponse> findAll() {
+    public List<ActivityReturn> findAll() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         return activityRepository.findAll().stream()
                 .map(activity -> {
-                    ActivityResponse dto = new ActivityResponse();
+                    ActivityReturn dto = new ActivityReturn();
                     dto.setId(activity.getId());
                     dto.setActivityDate(activity.getActivityDate());
                     dto.setTitle(activity.getTitle());

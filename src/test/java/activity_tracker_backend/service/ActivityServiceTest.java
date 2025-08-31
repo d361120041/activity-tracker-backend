@@ -4,7 +4,7 @@ import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.repository.ActivityRepository;
 import activity_tracker_backend.repository.UserRepository;
-import activity_tracker_backend.service.dto.ActivityResponse;
+import activity_tracker_backend.service.dto.ActivityReturn;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -192,7 +192,7 @@ public class ActivityServiceTest {
 
     @Test
     void testFindAll() {
-        List<ActivityResponse> activities = activityService.findAll();
+        List<ActivityReturn> activities = activityService.findAll();
         assertThat(activities).isNotNull();
         assertThat(activities).isNotEmpty();
 
