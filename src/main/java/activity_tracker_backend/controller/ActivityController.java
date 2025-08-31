@@ -2,16 +2,16 @@ package activity_tracker_backend.controller;
 
 import activity_tracker_backend.controller.dto.ActivityDto;
 import activity_tracker_backend.controller.dto.CSVDto;
+import activity_tracker_backend.controller.response.activity.ActivitiesResponse;
+import activity_tracker_backend.enums.Status;
 import activity_tracker_backend.model.Activity;
 import activity_tracker_backend.model.User;
 import activity_tracker_backend.service.ActivityService;
 import activity_tracker_backend.service.ReportService;
 import activity_tracker_backend.service.UserService;
-import activity_tracker_backend.service.dto.ActivityResponse;
+import activity_tracker_backend.service.dto.ActivityReturn;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.system.ApplicationHome;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -20,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -46,8 +43,12 @@ public class ActivityController {
 
     @GetMapping("/all")
     public ResponseEntity<?> findAllActivities() {
-        List<ActivityResponse> activities = activityService.findAll();
-        return ResponseEntity.ok().body(activities);
+        ActivitiesResponse response = new ActivitiesResponse();
+        List<ActivityReturn> activities = activityService.findAll();
+        response.setStatusCode(Status.OK.getStatusCode());
+        response.setMessage(Status.OK.getMessage());
+        response.setActivities(activities);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/byDate")
